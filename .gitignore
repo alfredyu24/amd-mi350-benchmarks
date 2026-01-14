@@ -1,0 +1,43 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+.eggs/
+dist/
+build/
+
+# Logs
+*.log
+*.out
+
+# IDE
+.vscode/
+.idea/
+
+# Claude Code
+.claude/
+
+# Cache
+.cache/
+*.cache
+
+# Temporary files
+*.tmp
+*.temp
+/tmp/
+
+# Model weights (too large)
+*.bin
+*.safetensors
+*.pt
+*.pth
+*.ckpt
+
+# MAD framework outputs
+MAD/*.log
+MAD/output/
+MAD/results/
+MAD/
