@@ -1,0 +1,66 @@
+# MI350X Optimized GRPO Configuration
+# Target: 6x AMD MI350X for training (GPUs 2-7)
+# Note: GPUs 0-1 reserved for vLLM inference server
+
+# Model arguments
+model_name_or_path: Qwen/Qwen2.5-Math-7B
+model_revision: main
+torch_dtype: bfloat16
+attn_implementation: eager  # Use eager for ROCm compatibility
+
+# Data training arguments
+dataset_name: open-r1/OpenR1-Math-220k
+dataset_prompt_column: problem
+system_prompt: "You are a helpful AI Assistant that provides well-reasoned and detailed responses. You first think about the reasoning process as an internal monologue and then provide the user with the answer. Respond in the following format: <think>\n...\n</think>\n<answer>\n...\n</answer>"
+
+# GRPO trainer config
+bf16: true
+use_vllm: true
+vllm_server_url: "http://localhost:8001/v1"
+do_eval: false
+
+# MI350X Optimized: Larger batches and completions
+gradient_accumulation_steps: 4
+per_device_train_batch_size: 8  # Larger for MI350X
+per_device_eval_batch_size: 8
+
+# Disable gradient checkpointing - MI350X has enough VRAM
+gradient_checkpointing: false
+
+hub_model_id: Qwen2.5-Math-7B-GRPO-MI350X
+hub_strategy: every_save
+learning_rate: 2.0e-05
+log_completions: true
+log_level: info
+logging_first_step: true
+logging_steps: 1
+logging_strategy: steps
+lr_scheduler_type: cosine
+
+# GRPO specific parameters
+max_prompt_length: 1024
+max_completion_length: 4096  # Larger for MI350X
+num_generations: 16  # Generate 16 completions per prompt
+
+max_steps: -1
+num_train_epochs: 1
+output_dir: /home/asrr/amd_test/outputs/grpo-7b
+overwrite_output_dir: true
+push_to_hub: false
+report_to:
+- wandb
+
+# Reward functions
+reward_funcs:
+- accuracy
+- format
+- tag_count
+reward_weights:
+- 1.0
+- 1.0
+- 1.0
+
+save_strategy: "epoch"
+save_total_limit: 2
+seed: 42
+warmup_ratio: 0.1
